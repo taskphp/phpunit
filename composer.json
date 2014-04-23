@@ -1,0 +1,21 @@
+{
+    "name": "task/phpunit",
+    "description": "PHPUnit plugin for Task",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mike Fisher",
+            "email": "mike@mbfisher.com"
+        }
+    ],
+    "require": {
+        "task/plugin": "~1.0",
+        "phpunit/phpunit": "~4.0",
+        "symfony/console": "~2.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Task\\Plugin\\": "src/"
+        }
+    }
+}
