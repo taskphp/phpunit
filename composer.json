@@ -13,6 +13,10 @@
         "phpunit/phpunit": "~4.0",
         "symfony/console": "~2.4"
     },
+    "require-dev": {
+        "task/task": "~0.1",
+        "task/process": "~0.1"
+    },
     "autoload": {
         "psr-4": {
             "Task\\Plugin\\": "src/"

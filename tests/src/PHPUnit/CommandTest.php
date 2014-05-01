@@ -10,6 +10,29 @@ class CommandTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('PHPUnit_TextUI_Command', $command);
     }
 
+    public function testRun()
+    {
+        $cwd = getcwd();
+
+        global $chdir;
+
+        function chdir($dir) {
+            global $chdir;
+            $chdir[] = $dir;
+        }
+
+        $tmp = sys_get_temp_dir();
+
+        $command = new Command;
+        $command->setWorkingDirectory($tmp);
+
+        ob_start();
+        $command->run();
+        ob_end_clean();
+
+        $this->assertEquals([$tmp, $cwd], $chdir);
+    }
+
     public function testArguments()
     {
         $command = (new Command)

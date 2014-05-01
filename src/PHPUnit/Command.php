@@ -11,6 +11,8 @@ class Command extends \PHPUnit_TextUI_Command
     protected $testCase;
     protected $testFile;
 
+    protected $printer;
+
     public function run(array $argv = [], $exit = false)
     {
         if ($this->workingDir) {
@@ -47,20 +49,27 @@ class Command extends \PHPUnit_TextUI_Command
         parent::handleArguments($argv);
 
         if ($this->printer) {
-            $this->arguments['printer'] = $this->printer->setPrinter(
-                isset($this->arguments['printer'])
-                    ? $this->arguments['printer']
-                    : new \PHPUnit_TextUI_ResultPrinter(
-                        isset($this->arguments['verbose']) ? $this->arguments['verbose'] : false
-                    )
-            );
+            $printer = isset($this->arguments['printer'])
+                ? $this->arguments['printer']
+                : new \PHPUnit_TextUI_ResultPrinter(
+                    isset($this->arguments['verbose']) ? $this->arguments['verbose'] : false
+                );
+
+            $this->arguments['printer'] = $this->printer->setPrinter($printer);
         }
+
+        return $this->arguments;
     }
 
     public function setWorkingDirectory($workingDir)
     {
         $this->workingDir = $workingDir;
         return $this;
+    }
+
+    public function setWrappedPrinter(\PHPUnit_Util_Printer $printer)
+    {
+        $this->printer = $printer;
     }
 
     public function setTestCase($testCase)
