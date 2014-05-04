@@ -2,16 +2,18 @@
 
 require 'vendor/autoload.php';
 
-use Task\Plugin\ProcessPlugin;
+use Task\Plugin\PhpSpecPlugin;
 
 $project = new Task\Project('task/phpunit');
 
 $project->inject(function ($container) {
-    $container['ps'] = new ProcessPlugin;
+    $container['phpspec'] = new PhpSpecPlugin;
 });
 
-$project->addTask('test', ['ps', function ($ps) {
-    $ps->build('phpunit')->pipe($this->getOutput());
+$project->addTask('test', ['phpspec', function ($phpspec) {
+    $phpspec->command('run')
+        ->setFormat('pretty')
+        ->pipe($this->getOutput());
 }]);
 
 return $project;

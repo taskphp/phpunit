@@ -2,74 +2,35 @@
 
 namespace Task\Plugin\PHPUnit;
 
-use Task\Plugin\Stream\WritableInterface;
+use Task\Plugin\Process\ProcessBuilder;
 
-class Command extends \PHPUnit_TextUI_Command
+class Command extends ProcessBuilder
 {
-    protected $workingDir;
-    protected $args = [];
     protected $testCase;
     protected $testFile;
+    protected $setup = false;
 
-    protected $printer;
-
-    public function run(array $argv = [], $exit = false)
+    public function __construct($prefix = null)
     {
-        if ($this->workingDir) {
-            $cwd = getcwd();
-            chdir($this->workingDir);
+        parent::__construct();
+        $this->setPrefix($prefix ?: 'phpunit');
+    }
+
+    public function getProcess()
+    {
+        if (!$this->setup) {
+            if ($this->testCase) {
+                $this->add($this->testCase);
+            }
+
+            if ($this->testFile) {
+                $this->add($this->testFile);
+            }
+
+            $this->setup = true;
         }
 
-        $retval = parent::run($this->getArguments(), false);
-
-        if ($this->workingDir) {
-            chdir($cwd);
-        }
-
-        return $retval;
-    }
-
-    public function read()
-    {
-        ob_start();
-        $this->run();
-        $output = ob_end_clean();
-        return $output;
-    }
-
-    public function pipe(WritableInterface $to)
-    {
-        $this->printer = new ResultPrinter($to);
-        $this->run();
-        return $to;
-    }
-
-    public function handleArguments(array $argv)
-    {
-        parent::handleArguments($argv);
-
-        if ($this->printer) {
-            $printer = isset($this->arguments['printer'])
-                ? $this->arguments['printer']
-                : new \PHPUnit_TextUI_ResultPrinter(
-                    isset($this->arguments['verbose']) ? $this->arguments['verbose'] : false
-                );
-
-            $this->arguments['printer'] = $this->printer->setPrinter($printer);
-        }
-
-        return $this->arguments;
-    }
-
-    public function setWorkingDirectory($workingDir)
-    {
-        $this->workingDir = $workingDir;
-        return $this;
-    }
-
-    public function setWrappedPrinter(\PHPUnit_Util_Printer $printer)
-    {
-        $this->printer = $printer;
+        return parent::getProcess();
     }
 
     public function setTestCase($testCase)
@@ -84,90 +45,68 @@ class Command extends \PHPUnit_TextUI_Command
         return $this;
     }
 
-    public function addArguments(array $arguments)
-    {
-        $this->args = array_merge($this->args, $arguments);
-
-        return $this;
-    }
-
-    public function getArguments()
-    {
-        $arguments = array_merge(['--no-globals-backup'], $this->args);
-
-        if ($this->testCase) {
-            $arguments[] = $this->testCase;
-        }
-
-        if ($this->testFile) {
-            $arguments[] = $this->testFile;
-        }
-
-        return $arguments;
-    }
-
     public function useColors()
     {
-        return $this->addArguments(['--colors']);
+        return $this->add('--colors');
     }
 
     public function setBootstrap($bootstrap)
     {
-        return $this->addArguments(['--bootstrap', $bootstrap]);
+        return $this->add('--bootstrap')->add($bootstrap);
     }
 
     public function setConfiguration($configuration)
     {
-        return $this->addArguments(['--configuration', $configuration]);
+        return $this->add('--configuration')->add($configuration);
     }
 
     public function addCoverage($coverage)
     {
-        return $this->addArguments(["--coverage-$coverage"]);
+        return $this->add("--coverage-$coverage");
     }
 
     public function setIniValue($key, $value)
     {
-        return $this->addArguments(['-d', "$key=$value"]);
+        return $this->add('-d')->add("$key=$value");
     }
 
     public function useDebug()
     {
-        return $this->addArguments(['--debug']);
+        return $this->add('--debug');
     }
 
     public function setFilter($filter)
     {
-        return $this->addArguments(['--filter', $filter]);
+        return $this->add('--filter')->add($filter);
     }
 
     public function setTestsuite($testsuite)
     {
-        return $this->addArguments(['--testsuite', $testsuite]);
+        return $this->add('--testsuite')->add($testsuite);
     }
 
     public function addGroups(array $groups)
     {
-        return $this->addArguments(['--group', implode(',', $groups)]);
+        return $this->add('--group')->add(implode(',', $groups));
     }
 
     public function excludeGroups(array $groups)
     {
-        return $this->addArguments(['--exclude-group', implode(',', $groups)]);
+        return $this->add('--exclude-group')->add(implode(',', $groups));
     }
 
     public function addTestSuffixes(array $testSuffixes)
     {
-        return $this->addArguments(['--test-suffix', implode(',', $testSuffixes)]);
+        return $this->add('--test-suffix')->add(implode(',', $testSuffixes));
     }
 
     public function setIncludePath($includePath)
     {
-        return $this->addArguments(['--include-path', $includePath]);
+        return $this->add('--include-path')->add($includePath);
     }
 
     public function setPrinter($printer)
     {
-        return $this->addArguments(['--printer', $printer]);
+        return $this->add('--printer')->add($printer);
     }
 }

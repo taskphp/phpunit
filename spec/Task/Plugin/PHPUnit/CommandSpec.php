@@ -1,41 +1,25 @@
 <?php
 
-namespace Task\Plugin\PHPUnit;
+namespace spec\Task\Plugin\PHPUnit;
 
-class CommandTest extends \PHPUnit_Framework_TestCase
+use PhpSpec\ObjectBehavior;
+use Prophecy\Argument;
+
+class CommandSpec extends ObjectBehavior
 {
-    public function testConstructor()
+    function it_is_initializable()
     {
-        $command = new Command;
-        $this->assertInstanceOf('PHPUnit_TextUI_Command', $command);
+        $this->shouldHaveType('Task\Plugin\PHPUnit\Command');
     }
 
-    public function testRun()
+    function it_sets_default_prefix()
     {
-        $cwd = getcwd();
-
-        global $chdir;
-
-        function chdir($dir) {
-            global $chdir;
-            $chdir[] = $dir;
-        }
-
-        $tmp = sys_get_temp_dir();
-
-        $command = new Command;
-        $command->setWorkingDirectory($tmp);
-
-        ob_start();
-        $command->run();
-        ob_end_clean();
-
-        $this->assertEquals([$tmp, $cwd], $chdir);
+        $this->getProcess()->getCommandLine()->shouldReturn("'phpunit'");
     }
 
-    public function testArguments()
+    function it_should_add_arguments()
     {
-        $command = (new Command)
+        $this
             ->useColors()
             ->setBootstrap('bootstrap.php')
             ->setConfiguration('phpunit.xml')
@@ -52,8 +36,10 @@ class CommandTest extends \PHPUnit_Framework_TestCase
             ->setTestCase('TestCase')
             ->setTestFile('TestCase.php');
 
-        $this->assertEquals([
-            '--no-globals-backup',
+        $commandline = implode(' ', array_map(function ($arg) {
+            return "'$arg'";
+        }, [
+            'phpunit',
             '--colors',
             '--bootstrap', 'bootstrap.php',
             '--configuration', 'phpunit.xml',
@@ -69,6 +55,8 @@ class CommandTest extends \PHPUnit_Framework_TestCase
             '--printer', 'TestSuiteListener',
             'TestCase',
             'TestCase.php'
-        ], $command->getArguments());
+        ]));
+
+        $this->getProcess()->getCommandLine()->shouldReturn($commandline);
     }
 }
