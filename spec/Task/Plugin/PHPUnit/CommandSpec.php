@@ -23,7 +23,7 @@ class CommandSpec extends ObjectBehavior
             ->useColors()
             ->setBootstrap('bootstrap.php')
             ->setConfiguration('phpunit.xml')
-            ->addCoverage('text')
+            ->addCoverage('text', 'php://stdout')
             ->setIniValue('foo', 'bar')
             ->useDebug()
             ->setFilter('^test')
@@ -43,7 +43,7 @@ class CommandSpec extends ObjectBehavior
             '--colors',
             '--bootstrap', 'bootstrap.php',
             '--configuration', 'phpunit.xml',
-            '--coverage-text',
+            '--coverage-text', 'php://stdout',
             '-d', 'foo=bar',
             '--debug',
             '--filter', '^test',

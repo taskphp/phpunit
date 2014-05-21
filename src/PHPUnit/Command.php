@@ -60,9 +60,9 @@ class Command extends ProcessBuilder
         return $this->add('--configuration')->add($configuration);
     }
 
-    public function addCoverage($coverage)
+    public function addCoverage($coverage, $output)
     {
-        return $this->add("--coverage-$coverage");
+        return $this->add("--coverage-$coverage")->add($output);
     }
 
     public function setIniValue($key, $value)
