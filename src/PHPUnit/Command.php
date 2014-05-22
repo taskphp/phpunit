@@ -13,7 +13,7 @@ class Command extends ProcessBuilder
     public function __construct($prefix = null)
     {
         parent::__construct();
-        $this->setPrefix($prefix ?: 'phpunit');
+        $this->setPrefix($prefix ?: './vendor/bin/phpunit');
     }
 
     public function getProcess()
