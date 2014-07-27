@@ -14,7 +14,7 @@ class CommandSpec extends ObjectBehavior
 
     function it_sets_default_prefix()
     {
-        $this->getProcess()->getCommandLine()->shouldReturn("'phpunit'");
+        $this->getProcess()->getCommandLine()->shouldReturn("'./vendor/bin/phpunit'");
     }
 
     function it_should_add_arguments()
@@ -33,13 +33,14 @@ class CommandSpec extends ObjectBehavior
             ->addTestSuffixes(['phpt'])
             ->setIncludePath('/tmp')
             ->setPrinter('TestSuiteListener')
+            ->useTap()
             ->setTestCase('TestCase')
             ->setTestFile('TestCase.php');
 
         $commandline = implode(' ', array_map(function ($arg) {
             return "'$arg'";
         }, [
-            'phpunit',
+            './vendor/bin/phpunit',
             '--colors',
             '--bootstrap', 'bootstrap.php',
             '--configuration', 'phpunit.xml',
@@ -53,6 +54,7 @@ class CommandSpec extends ObjectBehavior
             '--test-suffix', 'phpt',
             '--include-path', '/tmp',
             '--printer', 'TestSuiteListener',
+            '--tap',
             'TestCase',
             'TestCase.php'
         ]));

@@ -109,4 +109,9 @@ class Command extends ProcessBuilder
     {
         return $this->add('--printer')->add($printer);
     }
+
+    public function useTap()
+    {
+        return $this->add('--tap');
+    }
 }

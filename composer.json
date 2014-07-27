@@ -9,6 +9,7 @@
         }
     ],
     "require": {
+        "php": ">=5.4.0",
         "task/plugin": "~1.0",
         "task/process": "~0.2",
         "phpunit/phpunit": "~4.0"
